@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/data";
+import { Authenticator } from '@aws-amplify/ui-react'
+import '@aws-amplify/ui-react/styles.css'
 import type { Schema } from "@/amplify/data/resource";
 
 const client = generateClient<Schema>();
@@ -23,15 +25,26 @@ export default function App() {
     });
   }
 
+    
+  function deleteTodo(id: string) {
+    client.models.Todo.delete({ id })
+  }
+
   return (
+    <Authenticator>
+      {({ signOut, user }) => (
     <main>
       <h1>My todos</h1>
       <button onClick={createTodo}>+ new</button>
       <ul>
         {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
+          <li 
+          onClick={() => deleteTodo(todo.id)}
+          key={todo.id}>
+          {todo.content}</li>
         ))}
       </ul>
+      <button onClick={signOut}>Sign out</button>
       <div>
         🥳 App successfully hosted. Try creating a new todo.
         <br />
@@ -40,5 +53,7 @@ export default function App() {
         </a>
       </div>
     </main>
-  );
+    )}
+  </Authenticator>
+);
 }
